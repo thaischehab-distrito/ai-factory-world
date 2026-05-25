@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Factory World — Distrito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Red Hat Display',system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#e8e8e6;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+:root{--brand:#d0095f;--brand-dim:rgba(208,9,95,0.12);--bg-page:#0a0a0a;--bg-surface:#141414;--bg-elevated:#1c1c1c;--bg-hover:#222;--border:#2a2a2a;--border-subtle:#1f1f1f;--fg-1:#f0f0ee;--fg-2:#a8a8a4;--fg-3:#606060;--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;--radius-pill:48px;--tr:150ms ease;--tr-md:220ms ease;--nav-h:56px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(10,10,10,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;padding:0 24px;gap:0}
+.nav-logo{display:flex;align-items:center;gap:10px;margin-right:28px;flex-shrink:0}
+.nav-logo-mark{width:30px;height:30px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+.nav-logo-text{font-size:13px;font-weight:700;color:var(--fg-1);letter-spacing:-0.01em}
+.nav-logo-text span{color:var(--brand)}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-md);font-size:12.5px;font-weight:500;color:var(--fg-2);background:none;border:none;cursor:pointer;transition:color var(--tr),background var(--tr);white-space:nowrap;font-family:inherit}
+.nav-btn:hover{color:var(--fg-1);background:var(--bg-hover)}
+.nav-btn.active{color:var(--fg-1);background:var(--bg-elevated)}
+.nav-btn.active .nav-dot{background:var(--brand)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--fg-3);transition:background var(--tr)}
+
+/* PAGES */
+.page{display:none;min-height:calc(100vh - var(--nav-h))}
+.page.active{display:block}
+
+/* HERO */
+.hero{padding:60px 24px 52px;border-bottom:1px solid var(--border-subtle);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-60px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(208,9,95,0.065) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-overline{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand);margin-bottom:12px;display:block}
+.hero-title{font-size:clamp(2rem,5vw,3.25rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;color:var(--fg-1);margin-bottom:16px}
+.hero-sub{font-size:15px;color:var(--fg-2);line-height:1.65;max-width:560px}
+
+/* LAYOUT */
+.container{max-width:900px;margin:0 auto;padding:0 24px}
+.section{padding:40px 0;border-bottom:1px solid var(--border-subtle)}
+.section:last-child{border:none}
+.section-header{margin-bottom:24px}
+.section-overline{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand);margin-bottom:6px;display:block}
+.section-title{font-size:18px;font-weight:700;color:var(--fg-1);letter-spacing:-0.02em}
+.section-sub{font-size:13.5px;color:var(--fg-2);margin-top:6px;line-height:1.6}
+
+/* CARDS */
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px 24px;transition:border-color var(--tr-md),background var(--tr-md)}
+.card:hover{border-color:var(--brand);background:var(--bg-elevated)}
+.card-title{font-size:14px;font-weight:700;color:var(--fg-1);margin-bottom:6px;letter-spacing:-0.01em}
+.card-title a{color:inherit;text-decoration:none;transition:color var(--tr)}
+.card-title a:hover{color:var(--brand)}
+.card-desc{font-size:13px;color:var(--fg-2);line-height:1.6}
+.card-url{font-size:11px;color:var(--fg-3);margin-top:8px;display:block;word-break:break-all}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* LINK ROW */
+.link-row{display:flex;align-items:flex-start;gap:16px;padding:20px 0;border-bottom:1px solid var(--border-subtle)}
+.link-row:last-child{border:none;padding-bottom:0}
+.link-num{width:28px;height:28px;flex-shrink:0;border-radius:6px;background:var(--bg-elevated);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--fg-2);margin-top:2px}
+.link-body{flex:1}
+.link-title{font-size:14px;font-weight:700;color:var(--fg-1);margin-bottom:4px}
+.link-title a{color:inherit;text-decoration:none;transition:color var(--tr)}
+.link-title a:hover{color:var(--brand)}
+.link-desc{font-size:13px;color:var(--fg-2);line-height:1.6}
+.link-meta{font-size:11px;color:var(--fg-3);margin-top:6px;display:flex;align-items:center;gap:6px}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--radius-pill);border:1px solid var(--border);color:var(--fg-2);background:var(--bg-elevated)}
+.tag-brand{border-color:var(--brand);color:var(--brand);background:var(--brand-dim)}
+.tag-blue{border-color:#1e3a5f;color:#5b9bd5;background:rgba(91,155,213,0.08)}
+.tag-green{border-color:#1a3a1a;color:#4caf50;background:rgba(76,175,80,0.08)}
+.tag-amber{border-color:#3a2a00;color:#e6a817;background:rgba(230,168,23,0.08)}
+.tag-purple{border-color:#2a1a4a;color:#9c75d9;background:rgba(156,117,217,0.08)}
+
+/* STACK CARDS */
+.stack-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;transition:border-color var(--tr-md),transform var(--tr-md);text-decoration:none;display:block}
+.stack-card:hover{border-color:var(--brand);transform:translateY(-2px)}
+.stack-card-name{font-size:13px;font-weight:700;color:var(--brand);margin-bottom:4px}
+.stack-card-desc{font-size:12px;color:var(--fg-2);line-height:1.5}
+
+/* REFS TABLE */
+.ref-table{width:100%;border-collapse:collapse}
+.ref-table th{font-size:10.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg-3);padding:8px 12px;border-bottom:1px solid var(--border);text-align:left}
+.ref-table td{padding:12px;border-bottom:1px solid var(--border-subtle);font-size:13px;color:var(--fg-2);vertical-align:top}
+.ref-table tr:hover td{background:var(--bg-elevated)}
+.ref-table td:first-child{font-weight:600;color:var(--fg-1);white-space:nowrap}
+.ref-table a{color:var(--brand);text-decoration:none;font-weight:500}
+.ref-table a:hover{text-decoration:underline}
+.ref-table td:last-child{color:var(--fg-3);font-size:12px}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)}
+
+/* CASE */
+.case-entry{display:grid;grid-template-columns:1fr auto;gap:32px;padding:32px 0;border-bottom:1px solid var(--border-subtle);align-items:start}
+.case-entry:last-child{border:none;padding-bottom:0}
+.case-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg-3);margin-bottom:6px}
+.case-title{font-size:18px;font-weight:700;color:var(--fg-1);letter-spacing:-0.02em;margin-bottom:8px;line-height:1.3}
+.case-desc{font-size:13.5px;color:var(--fg-2);line-height:1.7;margin-bottom:12px}
+.case-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.case-badge{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;width:160px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;min-height:110px}
+.case-badge-label{font-size:11px;font-weight:500;color:var(--fg-2)}
+@media(max-width:640px){.case-entry{grid-template-columns:1fr}.case-badge{display:none}}
+
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius-pill);background:var(--brand);color:#fff;font-size:12.5px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:inherit;transition:opacity var(--tr)}
+.btn-primary:hover{opacity:0.88}
+.btn-sec{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius-pill);background:transparent;color:var(--fg-2);border:1px solid var(--border);font-size:12.5px;font-weight:500;text-decoration:none;cursor:pointer;font-family:inherit;transition:border-color var(--tr),color var(--tr)}
+.btn-sec:hover{border-color:var(--fg-2);color:var(--fg-1)}
+
+/* CONTACT */
+.contact-table{width:100%;border-collapse:collapse}
+.contact-table td{padding:10px 12px;border-bottom:1px solid var(--border-subtle);font-size:13px;vertical-align:top}
+.contact-table tr:last-child td{border:none}
+.ct-label{color:var(--fg-3);width:260px}
+.ct-name{font-weight:600;color:var(--fg-1)}
+.ct-role{font-weight:400;color:var(--fg-3)}
+
+/* PROCESS */
+.process-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border)}
+.process-step{background:var(--bg-surface);padding:20px 18px;position:relative}
+.process-step-num{font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--brand);text-transform:uppercase;margin-bottom:8px;display:block}
+.process-step-title{font-size:14px;font-weight:700;color:var(--fg-1);margin-bottom:6px;letter-spacing:-0.01em}
+.process-step-desc{font-size:12px;color:var(--fg-2);line-height:1.6}
+.process-step::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--border)}
+.process-step:last-child::after{display:none}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.metric{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px 16px;text-align:center}
+.metric-val{font-size:2rem;font-weight:700;color:var(--brand);letter-spacing:-0.03em;line-height:1;margin-bottom:4px}
+.metric-label{font-size:12px;color:var(--fg-2);line-height:1.4}
+
+/* MEETING */
+.meeting-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px 24px;display:flex;gap:16px;align-items:flex-start;transition:border-color var(--tr-md)}
+.meeting-card:hover{border-color:var(--brand)}
+.meeting-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex-shrink:0;margin-top:6px}
+.meeting-body{flex:1}
+.meeting-title{font-size:14px;font-weight:700;color:var(--fg-1);margin-bottom:4px}
+.meeting-meta{font-size:12px;color:var(--fg-3)}
+
+/* HOME GRID */
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.home-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:22px 20px;text-decoration:none;transition:border-color var(--tr-md),background var(--tr-md),transform var(--tr-md);cursor:pointer;display:block}
+.home-card:hover{border-color:var(--brand);background:var(--bg-elevated);transform:translateY(-3px)}
+.home-card-icon{width:34px;height:34px;border-radius:var(--radius-md);background:var(--brand-dim);border:1px solid rgba(208,9,95,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.home-card-icon svg{stroke:var(--brand);fill:none;stroke-width:1.5;width:16px;height:16px}
+.home-card-title{font-size:14px;font-weight:700;color:var(--fg-1);margin-bottom:6px;letter-spacing:-0.01em}
+.home-card-desc{font-size:12.5px;color:var(--fg-2);line-height:1.55}
+
+/* STATUS */
+.status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--radius-pill)}
+.status-prod{background:rgba(76,175,80,0.1);color:#4caf50;border:1px solid rgba(76,175,80,0.2)}
+.status-pilot{background:rgba(230,168,23,0.1);color:#e6a817;border:1px solid rgba(230,168,23,0.2)}
+.status-disc{background:rgba(91,155,213,0.1);color:#5b9bd5;border:1px solid rgba(91,155,213,0.2)}
+.status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ALERT */
+.alert{border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;background:var(--bg-elevated);display:flex;gap:12px;align-items:flex-start}
+.alert-brand{border-left:3px solid var(--brand)}
+.alert-title{font-size:13px;font-weight:700;color:var(--fg-1);margin-bottom:4px}
+.alert-body{font-size:12.5px;color:var(--fg-2);line-height:1.6}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--border-subtle);padding:24px;text-align:center;font-size:12px;color:var(--fg-3);margin-top:40px}
+.footer span{color:var(--brand)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">D</div>
+    <span class="nav-logo-text">AI Factory <span>World</span></span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="show('inicio')"><span class="nav-dot"></span>Início</button>
+    <button class="nav-btn" onclick="show('ferramentas')"><span class="nav-dot"></span>Ferramentas</button>
+    <button class="nav-btn" onclick="show('docs')"><span class="nav-dot"></span>Docs</button>
+    <button class="nav-btn" onclick="show('links')"><span class="nav-dot"></span>Links úteis</button>
+    <button class="nav-btn" onclick="show('processos')"><span class="nav-dot"></span>Processos</button>
+    <button class="nav-btn" onclick="show('refs')"><span class="nav-dot"></span>Referências</button>
+    <button class="nav-btn" onclick="show('meetings')"><span class="nav-dot"></span>Meetings</button>
+    <button class="nav-btn" onclick="show('cases')"><span class="nav-dot"></span>Cases</button>
+  </div>
+</nav>
+
+<!-- ═══ INÍCIO ═══════════════════════════════════════════════════ -->
+<div id="inicio" class="page active">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Distrito · AI Transformation</span>
+      <h1 class="hero-title">AI Factory World</h1>
+      <p class="hero-sub">Central de referências, ferramentas e processos da fábrica de inteligência do Grupo FCamara. Para quem entra agora e para quem já está no jogo.</p>
+      <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:8px">
+        <span class="status status-prod">8 clientes ativos</span>
+        <span class="status status-pilot">3 esteiras de entrega</span>
+        <span class="status status-disc">Metodologia própria</span>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Navegação rápida</span>
+        <div class="section-title">O que você precisa hoje</div>
+      </div>
+      <div class="home-grid">
+        <a class="home-card" onclick="show('ferramentas')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <div class="home-card-title">Ferramentas</div>
+          <div class="home-card-desc">Templates PPT, planilhas, Trust Kit, stack técnica e acessos rápidos.</div>
+        </a>
+        <a class="home-card" onclick="show('docs')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <div class="home-card-title">Docs</div>
+          <div class="home-card-desc">Handbook, One Pagers, frameworks e documentação de produto.</div>
+        </a>
+        <a class="home-card" onclick="show('links')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+          <div class="home-card-title">Links úteis</div>
+          <div class="home-card-desc">Drive, Miro, decks de execução e contatos de acesso.</div>
+        </a>
+        <a class="home-card" onclick="show('processos')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+          <div class="home-card-title">Processos</div>
+          <div class="home-card-desc">Metodologia end-to-end: Soft Landing → Discovery → North Star → Delivery → Scale.</div>
+        </a>
+        <a class="home-card" onclick="show('refs')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="home-card-title">Referências</div>
+          <div class="home-card-desc">Kickoffs, workshops, discoveries e deliveries por cliente.</div>
+        </a>
+        <a class="home-card" onclick="show('meetings')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="home-card-title">Meetings</div>
+          <div class="home-card-desc">Cadências, gravações e templates de reuniões recorrentes.</div>
+        </a>
+        <a class="home-card" onclick="show('cases')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div class="home-card-title">Cases</div>
+          <div class="home-card-desc">Gerdau, Honda, TRX, Lifetime, VWCO, Banco Pine e mais.</div>
+        </a>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">O que é</span>
+        <div class="section-title">AI Factory — fábrica de inteligência para o negócio</div>
+      </div>
+      <div class="grid-2" style="gap:12px">
+        <div class="alert alert-brand">
+          <div><div class="alert-title">Não somos body shop</div><div class="alert-body">Não vendemos horas nem alocamos heads. Entregamos soluções de AI com ROI mensurável e metodologia própria de ponta a ponta.</div></div>
+        </div>
+        <div class="alert">
+          <div><div class="alert-title">3 esteiras de entrega</div><div class="alert-body"><strong style="color:var(--fg-1)">Core AI</strong> (Python / LangChain) · <strong style="color:var(--fg-1)">AI Platforms</strong> (N8n, Copilot Studio) · <strong style="color:var(--fg-1)">AI Apps</strong> (soluções de prateleira)</div></div>
+        </div>
+      </div>
+      <div style="margin-top:16px" class="metrics">
+        <div class="metric"><div class="metric-val">~4</div><div class="metric-label">meses por ciclo</div></div>
+        <div class="metric"><div class="metric-val">R$100k</div><div class="metric-label">ticket Core AI /mês</div></div>
+        <div class="metric"><div class="metric-val">8</div><div class="metric-label">clientes em portfolio</div></div>
+        <div class="metric"><div class="metric-val">5</div><div class="metric-label">fases de metodologia</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Pessoas-chave</span>
+        <div class="section-title">Com quem falar</div>
+      </div>
+      <table class="contact-table">
+        <tr><td class="ct-label">Head de AI Products / conteúdo</td><td><span class="ct-name">Pedro Oliveira Martins</span> <span class="ct-role">(Pedrão)</span></td></tr>
+        <tr><td class="ct-label">PO · co-autora do Handbook</td><td><span class="ct-name">Nathalia Souza</span> <span class="ct-role">(Nath)</span></td></tr>
+        <tr><td class="ct-label">PO do time</td><td><span class="ct-name">Thais Chehab</span></td></tr>
+        <tr><td class="ct-label">CIO / sócio</td><td><span class="ct-name">Gustavo Araújo</span> <span class="ct-role">(Gus)</span></td></tr>
+        <tr><td class="ct-label">CTO · Azure / OpenAI / GCP</td><td><span class="ct-name">Ronaldo Takahashi</span></td></tr>
+        <tr><td class="ct-label">DevOps · Miro · OpenAI API keys</td><td><span class="ct-name">Daniel Mischiatti</span> <span class="ct-role">(ProdOps)</span></td></tr>
+        <tr><td class="ct-label">Senhas · GSuite · Sólides</td><td><span class="ct-name">Vitória Andrade ou Gabi Dantas</span> <span class="ct-role">(People)</span></td></tr>
+        <tr><td class="ct-label">Contratação de novos serviços</td><td><span class="ct-name">Felipe Lopes</span> <span class="ct-role">(Financeiro)</span></td></tr>
+        <tr><td class="ct-label">Liberação junto a clientes · VPN</td><td><span class="ct-name">Camila Silva</span> <span class="ct-role">(SalesOps)</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="footer">AI Factory World · Distrito AI Transformation · Grupo <span>F</span>Camara</div>
+</div>
+
+<!-- ═══ FERRAMENTAS ═══════════════════════════════════════════════ -->
+<div id="ferramentas" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Toolkit</span>
+      <h1 class="hero-title">Ferramentas</h1>
+      <p class="hero-sub">Templates, planilhas, frameworks e utilitários usados no dia a dia da fábrica.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Templates</span>
+        <div class="section-title">Apresentações e documentos</div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1gjlveQCs0xxfyOlG9tAvzu5NLiVWtpFnW482i4sF2Kw" target="_blank">Template PPT — Distrito</a></div><div class="card-desc">Base visual padrão para apresentações. Use como ponto de partida para qualquer slide deck de cliente ou interno.</div><div class="tags"><span class="tag">Google Slides</span><span class="tag-brand tag">Template</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1jfIT1lv4-0GgNx-GFKiD8iWGDoeEpcd2oFG8" target="_blank">[Template FC] AI Factory 2026</a></div><div class="card-desc">Template completo com ícones, ilustrações e assets visuais da identidade AI Factory 2026.</div><div class="tags"><span class="tag">Google Slides</span><span class="tag-brand tag">2026</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1wXtBOqJheLvYxf-85ptxA8QHmnuIDaBT8bB36uNdcl4" target="_blank">Manual de boas práticas com AI</a></div><div class="card-desc">Guia interno de uso de AI (Gemini, ChatGPT, Claude) com segurança. Indicado para onboarding do time.</div><div class="tags"><span class="tag">Google Slides</span><span class="tag-green tag">Onboarding</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1JilfT1lv4-0GqNx-GFKlD8lWMyNBTlWGDoeEpcd2oFG8/" target="_blank">Template Account Executives</a></div><div class="card-desc">Deck base para o time comercial — AI Factory to Unlock Performance. Identidade visual 2026.</div><div class="tags"><span class="tag">Google Slides</span><span class="tag-amber tag">Comercial</span></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Curadoria de agentes</span>
+        <div class="section-title">Controle e qualidade em produção</div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/spreadsheets/d/1AvZhq9ZjwD3_nuSo8yaRoKXbYoX9cVeHwtx9VKDBi9Y" target="_blank">Planilha de Curadoria de Agentes</a></div><div class="card-desc">Controle de feedbacks e testes em produção. Preencher junto com o cliente desde a homologação. Campos: pergunta · tempo de resposta · grau de acerto · tipo · prioridade · status.</div><div class="tags"><span class="tag-green tag">Correto</span><span class="tag-amber tag">Parcialmente correto</span><span class="tag-brand tag">Incorreto</span><span class="tag-purple tag">Nulo</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/document/d/1cpL21c1BBZxZJRvwa-56SUaKFcdZq3vkbO-F1T_V0RY" target="_blank">Framework de curadoria contínua (4 níveis)</a></div><div class="card-desc">Mentalidade e os 4 níveis de curadoria. Como conduzir ciclos de feedback e evoluir agentes em produção. Leitura obrigatória antes da homologação.</div><div class="tags"><span class="tag-blue tag">Leitura obrigatória</span></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Segurança</span>
+        <div class="section-title">Trust &amp; Security</div>
+      </div>
+      <div class="card" style="max-width:540px">
+        <div class="card-title"><a href="https://docs.google.com/document/d/1RE4KZMRiN-hBuaX56CH15sZwqQwZfGaOrkhNrqsjVCw" target="_blank">Trust &amp; Security Kit do Distrito</a></div>
+        <div class="card-desc">Referência de segurança para projetos de AI: controle de acesso, guardrails, compliance LGPD/GDPR, logs de auditoria e observabilidade.</div>
+        <div class="tags"><span class="tag">Controle de acesso</span><span class="tag">Guardrails</span><span class="tag">LGPD / GDPR</span><span class="tag">Auditoria</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Stack técnica</span>
+        <div class="section-title">Referências rápidas do time</div>
+      </div>
+      <div class="grid-auto">
+        <a class="stack-card" href="https://python.langchain.com" target="_blank"><div class="stack-card-name">LangChain</div><div class="stack-card-desc">Orquestração de fluxos e chamadas ao LLM — base do Core AI</div></a>
+        <a class="stack-card" href="https://langchain-ai.github.io/langgraph" target="_blank"><div class="stack-card-name">LangGraph</div><div class="stack-card-desc">Multi-agents, loops e ramificações — arquiteturas complexas</div></a>
+        <a class="stack-card" href="https://smith.langchain.com" target="_blank"><div class="stack-card-name">LangSmith</div><div class="stack-card-desc">Observabilidade — monitora custos, latência e qualidade</div></a>
+        <a class="stack-card" href="https://qdrant.tech" target="_blank"><div class="stack-card-name">Qdrant</div><div class="stack-card-desc">Vector DB open source preferido — RAG e memória de longo prazo</div></a>
+        <a class="stack-card" href="https://aws.amazon.com/bedrock" target="_blank"><div class="stack-card-name">AWS Bedrock</div><div class="stack-card-desc">Agentes enterprise gerenciados — referência Gerdau</div></a>
+        <a class="stack-card" href="https://n8n.io" target="_blank"><div class="stack-card-name">N8n</div><div class="stack-card-desc">AI Platforms — automação low-code, pode rodar on-premise</div></a>
+        <a class="stack-card" href="https://app.meetrox.ai/186" target="_blank"><div class="stack-card-name">MeetRox</div><div class="stack-card-desc">Gravação e transcrição automática de reuniões — login Google</div></a>
+        <a class="stack-card" href="https://miro.com" target="_blank"><div class="stack-card-name">Miro</div><div class="stack-card-desc">Workshops, service blueprints e power maps</div></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DOCS ══════════════════════════════════════════════════════ -->
+<div id="docs" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Documentação</span>
+      <h1 class="hero-title">Docs</h1>
+      <p class="hero-sub">Documentos institucionais, frameworks e one pagers da AI Factory.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Principal</span>
+        <div class="section-title">Onboarding e institucional</div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1gjlveQCs0xxfyOlG9tAvzu5NLiVWtpFnW482i4sF2Kw" target="_blank">Handbook — AI Factory</a></div><div class="card-desc">Guia institucional completo. Visão geral, estrutura, processo end-to-end, papéis, tech stack. Principal documento de onboarding.</div><div class="tags"><span class="tag-blue tag">Leitura obrigatória</span><span class="tag">Google Slides</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1jfIT1lv4-0GgNx-GFKiD8iWGDoeEpcd2oFG8" target="_blank">Execução projetos AI Factory 2026</a></div><div class="card-desc">Deck principal de execução — Enterprise AI Implementation. Base para kickoffs, proposals e alinhamentos estratégicos.</div><div class="tags"><span class="tag-brand tag">2026</span><span class="tag">Google Slides</span></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Frameworks</span>
+        <div class="section-title">Método e arquitetura</div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/document/d/1fp3wMUcuBdv-5UxcUVMt72JYPnTwZbB4j6kdtlS9-W8" target="_blank">One Pager — Entrega de sistemas agênticos</a></div><div class="card-desc">Single agent, supervisor hierárquico ou network/swarm. ADKs como aceleradores de delivery. Base para alinhar arquitetura com o cliente.</div><div class="tags"><span class="tag">Google Docs</span><span class="tag-purple tag">Arquitetura</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/document/d/1cpL21c1BBZxZJRvwa-56SUaKFcdZq3vkbO-F1T_V0RY" target="_blank">Framework de curadoria contínua (4 níveis)</a></div><div class="card-desc">4 níveis de curadoria — como conduzir ciclos de feedback e evoluir agentes em produção de forma estruturada.</div><div class="tags"><span class="tag">Google Docs</span><span class="tag-blue tag">Processo</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/document/d/1RE4KZMRiN-hBuaX56CH15sZwqQwZfGaOrkhNrqsjVCw" target="_blank">Trust &amp; Security Kit</a></div><div class="card-desc">Guardrails, controle de acesso, compliance LGPD/GDPR e logs de auditoria para projetos enterprise.</div><div class="tags"><span class="tag">Google Docs</span><span class="tag-amber tag">Segurança</span></div></div>
+        <div class="card"><div class="card-title"><a href="https://docs.google.com/presentation/d/1wXtBOqJheLvYxf-85ptxA8QHmnuIDaBT8bB36uNdcl4" target="_blank">Manual de boas práticas com AI</a></div><div class="card-desc">Uso de AI (Gemini, ChatGPT, Claude) com segurança e eficiência. Prompts, dicas e boas práticas de privacidade.</div><div class="tags"><span class="tag">Google Slides</span><span class="tag-green tag">Onboarding</span></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Multi-agents</span>
+        <div class="section-title">Documentação técnica avançada</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><a href="https://docs.google.com/presentation/d/1d5f9P8as9HavzOuIYXdodyThrmDKgwDTV8SBsUfC2rIhwo" target="_blank">AI multi-agents by Distrito AI Factory</a></div>
+        <div class="card-desc">Sistemas Multiagentes (Protocols) &amp; Arquitetura de Referência para IA. Dez/2025. Referência técnica para nivelamento do time e apresentações comerciais.</div>
+        <div class="tags"><span class="tag">Google Slides</span><span class="tag-purple tag">Multi-agents</span><span class="tag-blue tag">Arquitetura</span></div>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
+          <a class="btn-primary" href="https://docs.google.com/presentation/d/1d5f9P8as9HavzOuIYXdodyThrmDKgwDTV8SBsUfC2rIhwo" target="_blank">Abrir deck</a>
+          <a class="btn-sec" href="https://drive.google.com/file/d/1tn0v3RCU0Edw0lk1JdYVmf7b2iz1L07N" target="_blank">Drive PDF</a>
+          <a class="btn-sec" href="https://docs.google.com/document/d/1CVCVVAsVgtso9NuxhulldxO-YSqUycyCHq9Kl8vS9K8" target="_blank">Doc de apoio</a>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Advisory Board</span>
+        <div class="section-title">TRISM — Trust, Risk, Security &amp; Management</div>
+      </div>
+      <div class="card" style="max-width:540px">
+        <div class="card-title"><a href="https://docs.google.com/presentation/d/1gjlveQCs0xxfyOlG9tAvzu5NLiVWtpFnW482i4sF2Kw" target="_blank">Distrito &amp; CNP :: TRISM | Advisory Board Business #2</a></div>
+        <div class="card-desc">Apresentação do Advisory Board com foco em TRISM. Referência para projetos que envolvem governança e compliance de AI.</div>
+        <div class="tags"><span class="tag">Google Slides</span><span class="tag-amber tag">Governança</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LINKS ÚTEIS ══════════════════════════════════════════════ -->
+<div id="links" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Links</span>
+      <h1 class="hero-title">Links úteis</h1>
+      <p class="hero-sub">Tudo que o time acessa com frequência, num só lugar.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Repositórios</span>
+        <div class="section-title">Drive e boards</div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">1</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://drive.google.com/drive/folders/1oMCWPzBEQ4r9hyztkHtXSV4X2hYPOZxx" target="_blank">Google Drive — AI Factory (pasta principal)</a></div>
+          <div class="link-desc">Repositório central de todos os projetos, propostas, kickoffs e entregáveis da fábrica. Organize sempre por cliente → fase → sprint.</div>
+          <div class="link-meta"><span>Google Drive</span><span>·</span><span>Pasta compartilhada</span></div>
+        </div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">2</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://miro.com/app/board/uXjVL09xv4E=/" target="_blank">Fluxo de trabalho + entregáveis — Miro</a></div>
+          <div class="link-desc">Diagrama completo do processo end-to-end da AI Factory: Discovery → North Star → Delivery → Scale. Principal referência visual de processo.</div>
+          <div class="link-meta"><span>Miro</span><span>·</span><span>Board colaborativo</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Decks de referência</span>
+        <div class="section-title">Documentos de uso frequente</div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">3</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://docs.google.com/presentation/d/1jfIT1lv4-0GgNx-GFKiD8iWGDoeEpcd2oFG8" target="_blank">Execução projetos AI Factory 2026</a></div>
+          <div class="link-desc">Deck principal de execução — Enterprise AI Implementation. Base para kickoffs, proposals e alinhamentos com clientes.</div>
+          <div class="link-meta"><span>Google Slides</span></div>
+        </div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">4</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://docs.google.com/presentation/d/1gjlveQCs0xxfyOlG9tAvzu5NLiVWtpFnW482i4sF2Kw" target="_blank">Handbook — AI Factory</a></div>
+          <div class="link-desc">Guia institucional completo. Principal documento de onboarding do time.</div>
+          <div class="link-meta"><span>Google Slides</span></div>
+        </div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">5</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://docs.google.com/presentation/d/1wXtBOqJheLvYxf-85ptxA8QHmnuIDaBT8bB36uNdcl4" target="_blank">Distrito Experiência — AI Agents</a></div>
+          <div class="link-desc">Apresentação de AI Agents para o time e clientes. Introdução a agentes autônomos e multi-agents. Boa referência para nivelamento.</div>
+          <div class="link-meta"><span>Google Slides</span></div>
+        </div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">6</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://docs.google.com/presentation/d/1d5f9P8as9HavzOuIYXdodyThrmDKgwDTV8SBsUfC2rIhwo" target="_blank">AI multi-agents by Distrito AI Factory</a></div>
+          <div class="link-desc">Sistemas Multiagentes &amp; Arquitetura de Referência para IA. Referência técnica — Dez/2025.</div>
+          <div class="link-meta"><span>Google Slides</span><span>·</span><span>Dez 2025</span></div>
+        </div>
+      </div>
+      <div class="link-row">
+        <div class="link-num">7</div>
+        <div class="link-body">
+          <div class="link-title"><a href="https://docs.google.com/presentation/d/1JilfT1lv4-0GqNx-GFKlD8lWMyNBTlWGDoeEpcd2oFG8/" target="_blank">Template Account Executives</a></div>
+          <div class="link-desc">Deck base para o time comercial — AI Factory to Unlock Performance. Template oficial 2026.</div>
+          <div class="link-meta"><span>Google Slides</span><span>·</span><span>Comercial</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Acessos</span>
+        <div class="section-title">Para quem pedir ajuda</div>
+      </div>
+      <table class="contact-table">
+        <tr><td class="ct-label">Senhas · GSuite · Sólides</td><td><span class="ct-name">Vitória Andrade ou Gabi Dantas</span> <span class="ct-role">(People)</span></td></tr>
+        <tr><td class="ct-label">Azure · OpenAI · GCP</td><td><span class="ct-name">Ronaldo Takahashi</span> <span class="ct-role">(CTO)</span></td></tr>
+        <tr><td class="ct-label">Azure DevOps · Miro · OpenAI API keys</td><td><span class="ct-name">Daniel Mischiatti</span> <span class="ct-role">(ProdOps)</span></td></tr>
+        <tr><td class="ct-label">Contratação de novos serviços</td><td><span class="ct-name">Felipe Lopes</span> <span class="ct-role">(Financeiro)</span></td></tr>
+        <tr><td class="ct-label">Liberação junto a clientes · VPN</td><td><span class="ct-name">Camila Silva</span> <span class="ct-role">(SalesOps)</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROCESSOS ════════════════════════════════════════════════ -->
+<div id="processos" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Metodologia</span>
+      <h1 class="hero-title">Processos</h1>
+      <p class="hero-sub">O caminho da AI Factory, do primeiro contato até escala em produção.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Jornada</span>
+        <div class="section-title">Metodologia end-to-end</div>
+        <div class="section-sub">Cada fase tem entregáveis definidos, critérios de saída e templates de referência.</div>
+      </div>
+      <div class="process-steps">
+        <div class="process-step"><span class="process-step-num">01</span><div class="process-step-title">Soft Landing</div><div class="process-step-desc">Onboarding, acesso a dados, alinhamento de expectativas e formação do squad.</div></div>
+        <div class="process-step"><span class="process-step-num">02</span><div class="process-step-title">Discovery</div><div class="process-step-desc">Mapeamento de jornadas, dores e oportunidades. Workshops com o cliente.</div></div>
+        <div class="process-step"><span class="process-step-num">03</span><div class="process-step-title">North Star</div><div class="process-step-desc">Definição da visão de produto, solução proposta e roadmap de entrega.</div></div>
+        <div class="process-step"><span class="process-step-num">04</span><div class="process-step-title">Delivery</div><div class="process-step-desc">Sprints de desenvolvimento, checkpoints periódicos e curadoria contínua.</div></div>
+        <div class="process-step"><span class="process-step-num">05</span><div class="process-step-title">Scale</div><div class="process-step-desc">Expansão do produto para novos casos de uso e áreas do cliente.</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Esteiras de entrega</span>
+        <div class="section-title">3 modelos de operação</div>
+      </div>
+      <div class="grid-3">
+        <div class="card"><div class="section-overline" style="font-size:10px;margin-bottom:8px">Esteira 1</div><div class="card-title">Core AI</div><div class="card-desc">Python com LangChain, LangGraph e Qdrant. Projetos customizados, arquitetura de agentes complexa. Ticket ~R$100k/mês.</div><div class="tags"><span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">LangGraph</span></div></div>
+        <div class="card"><div class="section-overline" style="font-size:10px;margin-bottom:8px">Esteira 2</div><div class="card-title">AI Platforms</div><div class="card-desc">N8n, Copilot Studio e Azure. Ciclo mais rápido, ideal para automação de processos.</div><div class="tags"><span class="tag">N8n</span><span class="tag">Copilot Studio</span><span class="tag">Azure</span></div></div>
+        <div class="card"><div class="section-overline" style="font-size:10px;margin-bottom:8px">Esteira 3</div><div class="card-title">AI Apps</div><div class="card-desc">Soluções de prateleira configuradas. Menor time-to-value, boa entrada para clientes que querem resultados rápidos.</div><div class="tags"><span class="tag">SaaS</span><span class="tag">Configuração</span></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Curadoria</span>
+        <div class="section-title">4 níveis de qualidade em produção</div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><span class="section-overline" style="font-size:10px">Nível 1</span><div class="card-title">Curadoria reativa</div><div class="card-desc">Coleta de feedbacks dos usuários finais. Identificação de erros críticos e respostas fora de escopo.</div></div>
+        <div class="card"><span class="section-overline" style="font-size:10px">Nível 2</span><div class="card-title">Curadoria estruturada</div><div class="card-desc">Sessões formais com o cliente para revisão de casos de uso. Priorização de melhorias por impacto.</div></div>
+        <div class="card"><span class="section-overline" style="font-size:10px">Nível 3</span><div class="card-title">Fine-tuning e RAG</div><div class="card-desc">Atualização de knowledge bases, ajuste de prompts e refinamento de parâmetros com base nos dados coletados.</div></div>
+        <div class="card"><span class="section-overline" style="font-size:10px">Nível 4</span><div class="card-title">Evolução de produto</div><div class="card-desc">Novos casos de uso, expansão de escopo e transição para a fase Scale do contrato.</div></div>
+      </div>
+      <div style="margin-top:14px"><a class="btn-sec" href="https://docs.google.com/document/d/1cpL21c1BBZxZJRvwa-56SUaKFcdZq3vkbO-F1T_V0RY" target="_blank">Ver framework completo</a></div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <span class="section-overline">Arquitetura</span>
+        <div class="section-title">Quando usar cada padrão agêntico</div>
+      </div>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">Single Agent</div><div class="card-desc">Tarefa bem definida, escopo limitado, ferramentas simples. Menor complexidade e custo operacional.</div><div class="tags"><span class="tag-green tag">Mais simples</span></div></div>
+        <div class="card"><div class="card-title">Supervisor Hierárquico</div><div class="card-desc">Um agente orquestra outros especializados. Ideal para processos com etapas distintas.</div><div class="tags"><span class="tag-blue tag">Intermediário</span></div></div>
+        <div class="card"><div class="card-title">Network / Swarm</div><div class="card-desc">Múltiplos agentes colaborando em paralelo. Máxima complexidade — Honda Niguri, Lifetime Banker Copilot.</div><div class="tags"><span class="tag-amber tag">Alta complexidade</span></div></div>
+      </div>
+      <div style="margin-top:14px"><a class="btn-sec" href="https://docs.google.com/document/d/1fp3wMUcuBdv-5UxcUVMt72JYPnTwZbB4j6kdtlS9-W8" target="_blank">Ver one pager de arquitetura</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REFERÊNCIAS ══════════════════════════════════════════════ -->
+<div id="refs" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Referências</span>
+      <h1 class="hero-title">Referências</h1>
+      <p class="hero-sub">Kickoffs, workshops, discoveries e deliveries organizados por fase e cliente.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Fase 1</span><div class="section-title">Kickoffs</div></div>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Cliente</th><th>Documento</th><th>Setor</th><th>Destaque</th></tr></thead>
+          <tbody>
+            <tr><td>TRX Investimentos</td><td><a href="https://docs.google.com/presentation/d/17EpM8dfkVZvBiCbl08TVtQz-x6_Tkj1cj6bS-srA5H8" target="_blank">Kickoff AI Factory</a></td><td>Fundos imobiliários</td><td>Referência mais recente — Ago/2025</td></tr>
+            <tr><td>AlmapBBDO</td><td><a href="https://docs.google.com/presentation/d/1r0LtVdrFj7rPlJQ8wB1ceXUi6CODZAfUIWCEYmJdfzE" target="_blank">Kickoff AI Factory</a></td><td>Comunicação / Agência</td><td>Referência para setor criativo</td></tr>
+            <tr><td>Banco Pine</td><td><a href="https://docs.google.com/presentation/d/1ZfcgHZuDWLnTgXBlPaiDKPpt-gFWp1lLiOylmmkQWEw" target="_blank">Kickoff AI Factory</a></td><td>Financeiro / Bancário</td><td>Referência para setor financeiro</td></tr>
+            <tr><td>Honda</td><td><a href="https://docs.google.com/presentation/d/1dHtGDNfOPsaTvXa25Tm1Hnvl3i_xffUokhUBWT9PrAE" target="_blank">Kickoff AI Factory v2</a></td><td>Automotivo</td><td>Inclui workshop 2W (Niguri)</td></tr>
+            <tr><td>HCFMUSP</td><td><a href="https://docs.google.com/presentation/d/1Taka5XjNF8FNuvJzkSzy5Mu70z4u5XFiclXR3fwiOKs" target="_blank">Kickoff Predictive Supply Chain</a></td><td>Saúde / Hospital</td><td>Foco em ML preditivo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Fase 2</span><div class="section-title">Workshops</div></div>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Cliente</th><th>Documento</th><th>Foco</th></tr></thead>
+          <tbody>
+            <tr><td>Gerdau</td><td><a href="https://docs.google.com/presentation/d/13RY3T6ZsvmlOT3XTelHiqUvZuLhtUymwvsAK6Crf_FU" target="_blank">Workshop AI Factory</a></td><td>Indústria pesada e manufatura</td></tr>
+            <tr><td>VWCO</td><td><a href="https://docs.google.com/presentation/d/1G490IS5covaSxIiRUmEyzQG7qtpGE9INBaC-T2DJ8AA" target="_blank">Workshop Literatura Técnica</a></td><td>Grande volume documental e RAG</td></tr>
+            <tr><td>Electrolux</td><td><a href="https://docs.google.com/presentation/d/1_yQw-ATWm2-jQvxzv2rFq8590I8h4TuUJ551bN8iG3I" target="_blank">Workshop Ecossistema Técnico de AI</a></td><td>Mapeamento de stack em grandes corporações</td></tr>
+            <tr><td>Banco Pine</td><td><a href="https://docs.google.com/presentation/d/1_nQFHzapf2vEFGxdf02_FKFgFiJ9hToDahbp3ba9WP" target="_blank">Workshop AI Factory</a></td><td>Financeiro — produtos e processos bancários</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Fase 3</span><div class="section-title">Discovery &amp; North Star</div></div>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Cliente</th><th>Documento</th><th>Destaque</th></tr></thead>
+          <tbody>
+            <tr><td>Multilog</td><td><a href="https://docs.google.com/presentation/d/1SWXY2yNpTBIbOFMqVWyjU7QUWSRCMxz9Qf6Fkbx-ICc" target="_blank">Discovery · Atendimento Multicanal</a></td><td>Melhor referência de discovery com jornada completa</td></tr>
+            <tr><td>Honda</td><td><a href="https://docs.google.com/presentation/d/1DEMkmkT_baiHsanpqcxYg9PVTH7LziKwGhnKVCeTTYI" target="_blank">Niguri Discovery Checkpoint v7</a></td><td>Discovery mais maduro e aprofundado da fábrica</td></tr>
+            <tr><td>Banco Pine</td><td><a href="https://docs.google.com/presentation/d/1ILsusFM2i-9QDjQa1wDiEU9UwoCqjY6Ys0TeQJ6V1aA" target="_blank">North Star · Solução + Roadmap</a></td><td>Referência para setor financeiro</td></tr>
+            <tr><td>CNP</td><td><a href="https://docs.google.com/presentation/d/19qhJdwJk_QGVcUDHmfQJA4xGf4Q6xwxkVxQjOgvEuLY" target="_blank">Soft Landing · North Star</a></td><td>Referência de onboarding e pré-kickoff</td></tr>
+            <tr><td>VWCO</td><td><a href="https://docs.google.com/presentation/d/1UQOqLpc7ZPz75_aqrF96anheBf9Cgs87xPiR8bBIDog" target="_blank">Discovery · Literatura Técnica</a></td><td>Grande volume documental, RAG complexo</td></tr>
+            <tr><td>Lifetime</td><td><a href="https://docs.google.com/presentation/d/1aNZr4zH_FfSEcs4sCaDvrkGZGOucts2dKsw5WQ04tFI" target="_blank">Discovery · Banker Copilot</a></td><td>Multi-agents, parceria Oracle + MIT.Rocks</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Fase 4</span><div class="section-title">Delivery Checkpoints</div></div>
+      <div class="table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Cliente</th><th>Documento</th><th>Destaque</th></tr></thead>
+          <tbody>
+            <tr><td>TRX</td><td><a href="https://docs.google.com/presentation/d/1cP4kN-AilJ2QqJEeX56703shLg1ovmxbPYFLIt1eibc" target="_blank">TRX 3.0 — AI Factory Delivery</a></td><td>Referência de delivery contínuo e evolução de produto</td></tr>
+            <tr><td>Gerdau</td><td><a href="https://docs.google.com/presentation/d/1mBPdriNlEB36EOQocG3eTUqc_G0ym6LahfAnSEMuG3E" target="_blank">Atendimento 24/7 CG</a></td><td>Agente WhatsApp com AWS Bedrock em produção</td></tr>
+            <tr><td>Lifetime</td><td><a href="https://docs.google.com/presentation/d/12TtoQ-QWQW--_DzKrdcTJgPq91Nu-_oeSMLALyEcPIY" target="_blank">Supervisor Sintético POC v2</a></td><td>Maior complexidade de integração da fábrica</td></tr>
+            <tr><td>VWCO</td><td><a href="https://docs.google.com/presentation/d/1beiRXt53n-vRUppzMdXmYFvgJa2-7CY2hJT5Bd99_hA" target="_blank">Checkpoint · Literatura Técnica</a></td><td>RAG em grande volume documental</td></tr>
+            <tr><td>Pine</td><td><a href="https://docs.google.com/presentation/d/1POuwDx_meZwhsvznmZY-OiBuMBcElj1aVcuG9mlHzC4" target="_blank">Milestones · Atacado</a></td><td>Evolução de produto bancário por sprints</td></tr>
+            <tr><td>Honda</td><td><a href="https://docs.google.com/presentation/d/1gPND4BKCqH7jWADJWAylsS8KTh8cfQo_O3BM1ETWysU" target="_blank">Niguri Delivery Checkpoint</a></td><td>Multi-agents automotivo em produção</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MEETINGS ═════════════════════════════════════════════════ -->
+<div id="meetings" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Cadência</span>
+      <h1 class="hero-title">Meetings</h1>
+      <p class="hero-sub">Gravações, templates e cadências de reuniões da AI Factory.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Ferramenta</span><div class="section-title">Gravação e transcrição</div></div>
+      <div class="card" style="max-width:480px">
+        <div class="card-title"><a href="https://app.meetrox.ai/186" target="_blank">MeetRox — Gravação automática</a></div>
+        <div class="card-desc">Todas as reuniões do time devem ser gravadas e transcritas automaticamente via MeetRox. Login com Google.</div>
+        <div class="tags"><span class="tag-green tag">Obrigatório em reuniões com cliente</span></div>
+        <div style="margin-top:14px"><a class="btn-primary" href="https://app.meetrox.ai/186" target="_blank">Abrir MeetRox</a></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Cadências recorrentes</span><div class="section-title">Reuniões do time</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">Weekly de projeto — cliente</div><div class="meeting-meta">Semanal · Checkpoint de sprint · PM + cliente + lead técnico</div></div></div>
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">Sprint review</div><div class="meeting-meta">A cada 2 semanas · Demo de entregáveis · Alinhamento de próximos passos</div></div></div>
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">Curadoria com cliente</div><div class="meeting-meta">Mensal ou quinzenal · Revisão de feedbacks · Uso da planilha de curadoria</div></div></div>
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">Kickoff de projeto</div><div class="meeting-meta">Único · Abertura formal · Alinhamento de escopo, squad e acessos</div></div></div>
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">North Star Checkpoint</div><div class="meeting-meta">Único · Ao fim do discovery · Validação da solução proposta e roadmap</div></div></div>
+        <div class="meeting-card"><div class="meeting-dot"></div><div class="meeting-body"><div class="meeting-title">Delivery Checkpoint</div><div class="meeting-meta">A cada ciclo · Apresentação de resultados e métricas de impacto</div></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><span class="section-overline">Boas práticas</span><div class="section-title">Como conduzir reuniões de projeto</div></div>
+      <div class="grid-2">
+        <div class="alert alert-brand"><div><div class="alert-title">Sempre grave com MeetRox</div><div class="alert-body">Toda reunião com cliente deve ser gravada. Garante alinhamento, evita ruído e facilita onboarding de novos membros.</div></div></div>
+        <div class="alert"><div><div class="alert-title">Pauta antes, ata depois</div><div class="alert-body">Envie a pauta com 24h de antecedência. Registre decisões e próximas ações logo após a reunião.</div></div></div>
+        <div class="alert"><div><div class="alert-title">Curadoria na planilha</div><div class="alert-body">Toda sessão de curadoria com cliente deve alimentar a planilha de curadoria de agentes em tempo real.</div></div></div>
+        <div class="alert"><div><div class="alert-title">Checkpoints com deck padrão</div><div class="alert-body">Use sempre os templates de kickoff, north star e delivery checkpoint — adapte, nunca comece do zero.</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CASES ═════════════════════════════════════════════════════ -->
+<div id="cases" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-overline">Portfolio</span>
+      <h1 class="hero-title">Cases</h1>
+      <p class="hero-sub">Projetos entregues pela AI Factory com resultados reais em produção.</p>
+      <div style="margin-top:20px"><a class="btn-primary" href="https://docs.google.com/presentation/d/1gjlveQCs0xxfyOlG9tAvzu5NLiVWtpFnW482i4sF2Kw" target="_blank">Ver deck completo de cases (set/2025)</a></div>
+    </div>
+  </div>
+  <div class="container">
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">Gerdau · Indústria / Aço</div>
+          <div class="case-title">Atendimento 24/7 via WhatsApp + cross-sell agent</div>
+          <div class="case-desc">Dois agentes em produção: atendimento automatizado para clientes B2B via WhatsApp e agente de cross-sell com base em histórico de compras. Stack: AWS Bedrock + Agents + Knowledge Base + Parquet no S3.</div>
+          <div class="tags"><span class="tag-brand tag">Em produção</span><span class="tag">LLM Agent</span><span class="tag">AWS Bedrock</span><span class="tag-blue tag">WhatsApp</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1mBPdriNlEB36EOQocG3eTUqc_G0ym6LahfAnSEMuG3E" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/13RY3T6ZsvmlOT3XTelHiqUvZuLhtUymwvsAK6Crf_FU" target="_blank">Workshop</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M9 20v-5h6v5"/></svg>
+          <div class="case-badge-label">Gerdau · CG 24/7</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">Honda · Automotivo</div>
+          <div class="case-title">Niguri — assistente de planejamento comercial (2W)</div>
+          <div class="case-desc">Agente conversacional para planejamento comercial da divisão de motos. Arquitetura network/swarm com múltiplos agentes especializados. Um dos projetos mais longos e aprofundados da fábrica.</div>
+          <div class="tags"><span class="tag-brand tag">Multi-agents</span><span class="tag">RAG</span><span class="tag">Core AI</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1gPND4BKCqH7jWADJWAylsS8KTh8cfQo_O3BM1ETWysU" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1DEMkmkT_baiHsanpqcxYg9PVTH7LziKwGhnKVCeTTYI" target="_blank">Discovery v7</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1dHtGDNfOPsaTvXa25Tm1Hnvl3i_xffUokhUBWT9PrAE" target="_blank">Kickoff</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/><path d="M1 17l1-9 5-3 6 3 4-2 4 2v9"/></svg>
+          <div class="case-badge-label">Honda · Niguri</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">TRX Investimentos · Fundos Imobiliários</div>
+          <div class="case-title">TRX 3.0 — AI Factory para fundos imobiliários</div>
+          <div class="case-desc">AI Factory com múltiplos casos de uso. Um dos contratos de maior duração da fábrica. Referência de evolução de piloto para produto em produção com métricas financeiras.</div>
+          <div class="tags"><span class="tag-brand tag">Delivery contínuo</span><span class="tag">LLM Agent</span><span class="tag-blue tag">ML preditivo</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1cP4kN-AilJ2QqJEeX56703shLg1ovmxbPYFLIt1eibc" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/17EpM8dfkVZvBiCbl08TVtQz-x6_Tkj1cj6bS-srA5H8" target="_blank">Kickoff</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 10h10M7 14h10M12 6v12"/></svg>
+          <div class="case-badge-label">TRX · 3.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">Lifetime · Investimentos</div>
+          <div class="case-title">Banker Copilot — supervisor sintético para assessores</div>
+          <div class="case-desc">Arquitetura multi-agents com supervisor sintético para apoio a assessores de investimento. Parceria com Oracle e MIT.Rocks. Maior complexidade de integração já entregue pela fábrica.</div>
+          <div class="tags"><span class="tag-brand tag">Alta complexidade</span><span class="tag">Multi-agents</span><span class="tag">Oracle + AWS</span><span class="tag-purple tag">MIT.Rocks</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/12TtoQ-QWQW--_DzKrdcTJgPq91Nu-_oeSMLALyEcPIY" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1aNZr4zH_FfSEcs4sCaDvrkGZGOucts2dKsw5WQ04tFI" target="_blank">Discovery</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <div class="case-badge-label">Lifetime · Banker</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">VWCO · Automotivo Comercial</div>
+          <div class="case-title">Agente de literatura técnica para mecânicos</div>
+          <div class="case-desc">Agente RAG para busca em manuais técnicos de veículos comerciais. Grande volume documental com pipeline de ingestão automatizada. Referência de projeto com dados não estruturados em escala.</div>
+          <div class="tags"><span class="tag-brand tag">RAG</span><span class="tag">Data pipeline</span><span class="tag">Core AI</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1beiRXt53n-vRUppzMdXmYFvgJa2-7CY2hJT5Bd99_hA" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1UQOqLpc7ZPz75_aqrF96anheBf9Cgs87xPiR8bBIDog" target="_blank">Discovery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1G490IS5covaSxIiRUmEyzQG7qtpGE9INBaC-T2DJ8AA" target="_blank">Workshop</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><rect x="1" y="3" width="22" height="14" rx="2"/><path d="M1 17h22M6 21h12"/><path d="M8 7h8M8 11h5"/></svg>
+          <div class="case-badge-label">VWCO · Literatura</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">Banco Pine · Financeiro / Atacado</div>
+          <div class="case-title">AI Factory para banco de atacado</div>
+          <div class="case-desc">AI Factory com North Star Checkpoint detalhado, roadmap completo e milestones de entrega por área (atacado, varejo, operações). Referência mais completa de setor financeiro na fábrica.</div>
+          <div class="tags"><span class="tag-brand tag">Delivery contínuo</span><span class="tag">LLM Agent</span><span class="tag-blue tag">ML</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1POuwDx_meZwhsvznmZY-OiBuMBcElj1aVcuG9mlHzC4" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1ILsusFM2i-9QDjQa1wDiEU9UwoCqjY6Ys0TeQJ6V1aA" target="_blank">North Star</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1ZfcgHZuDWLnTgXBlPaiDKPpt-gFWp1lLiOylmmkQWEw" target="_blank">Kickoff</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <div class="case-badge-label">Banco Pine</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">Multilog · Logística</div>
+          <div class="case-title">Atendimento multicanal com AI Agent</div>
+          <div class="case-desc">Agente de atendimento para operador logístico com integração a múltiplos canais (WhatsApp, Teams). Referência de discovery bem estruturado com mapeamento de jornada e integração com sistemas legados.</div>
+          <div class="tags"><span class="tag-brand tag">LLM Agent</span><span class="tag">Core AI</span><span class="tag-blue tag">WhatsApp</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1YgqorlcJh_qErTXnyOXWL4qpPsetc_9HxSd92jbEpBM" target="_blank">Ver delivery</a><a class="btn-sec" href="https://docs.google.com/presentation/d/1SWXY2yNpTBIbOFMqVWyjU7QUWSRCMxz9Qf6Fkbx-ICc" target="_blank">Discovery</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div class="case-badge-label">Multilog · Atendimento</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="case-entry">
+        <div>
+          <div class="case-label">AlmapBBDO · Comunicação / Agência</div>
+          <div class="case-title">AI Factory para criação publicitária</div>
+          <div class="case-desc">AI Factory estruturada para agência de publicidade. Referência para o setor criativo, com foco em automação de processos de criação e personalização de conteúdo em escala.</div>
+          <div class="tags"><span class="tag-brand tag">LLM Agent</span><span class="tag">Core AI</span><span class="tag-purple tag">Setor criativo</span></div>
+          <div class="case-btns"><a class="btn-primary" href="https://docs.google.com/presentation/d/1r0LtVdrFj7rPlJQ8wB1ceXUi6CODZAfUIWCEYmJdfzE" target="_blank">Ver kickoff</a></div>
+        </div>
+        <div class="case-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          <div class="case-badge-label">AlmapBBDO</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="footer">AI Factory World · Distrito AI Transformation · Grupo <span>F</span>Camara</div>
+</div>
+
+<script>
+const navBtns = document.querySelectorAll('.nav-btn');
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  navBtns.forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btn = [...navBtns].find(b => b.getAttribute('onclick') === "show('"+id+"')");
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
